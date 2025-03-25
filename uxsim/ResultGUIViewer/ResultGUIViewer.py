@@ -59,7 +59,7 @@ class EdgeItem(QGraphicsItem):
         path = self.shape()
         length = path.length()
         num_segments = self.density_list.shape[1]
-        segment_length = length / num_segments
+        segment_length = 0 if num_segments == 0 else length / num_segments
         maxlw = 10
         minlw = 0.5
 
@@ -142,7 +142,7 @@ class NodeItem(QGraphicsItem):
 
     def paint(self, painter, option, widget):
         painter.setBrush(Qt.white)
-        painter.drawEllipse(-10, -10, 20, 20)
+        painter.drawEllipse(-10, -10, 1, 1)
         if self.show_name:
             painter.setPen(QColor(0, 128, 0))
             painter.drawText(-5, 5, self.name)

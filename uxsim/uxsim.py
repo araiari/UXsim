@@ -1998,16 +1998,21 @@ class World:
         if len(dests) == 0:
             dests.append(W.get_nearest_node(x_dest, y_dest))
 
-        ts = np.linspace(t_start, t_end, size)
+        ts = W.rng.integers(low=t_start, high=t_end, size=size, endpoint=True)
         
         os = W.rng.choice(origs, size=size)
         ds = W.rng.choice(dests, size=size)
         
-        for t, o, d, in zip(ts, os, ds):
-            d2 = d
-            if o == d:
-                d2 = W.rng.choice([dd for dd in dests if dd!=d])
-            W.addVehicle(o, d2, t, attribute=attribute, direct_call=False)
+        if len(dests)>1 or len(origs)>1:
+            for t, o, d, in zip(ts, os, ds):
+                o2 = o
+                d2 = d
+                if o == d:
+                    if len(dests)>1:
+                        d2 = W.rng.choice([dd for dd in dests if dd!=d])
+                    elif len(origs)>1:
+                        o2 = W.rng.choice([oo for oo in origs if oo!=o])
+                W.addVehicle(o2, d2, t, attribute=attribute, direct_call=False)
 
 
     @demand_info_record
@@ -2049,7 +2054,7 @@ class World:
                 dests_new.append(d)
         origs = origs_new
         dests = dests_new
-        ts = np.linspace(t_start, t_end, size)
+        ts = W.rng.integers(low=t_start, high=t_end, size=size, endpoint=True)
         
         os = W.rng.choice(origs, size=size)
         ds = W.rng.choice(dests, size=size)
