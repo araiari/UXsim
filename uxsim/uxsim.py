@@ -1945,7 +1945,7 @@ class World:
                 W.adddemand(o, d, t_start, t_end, flow, volume, attribute, direct_call=False)
 
     @demand_info_record
-    def adddemand_area2area2(W, x_orig, y_orig,  radious_orig, x_dest, y_dest, radious_dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True):
+    def adddemand_area2area2(W, x_orig, y_orig,  radious_orig, x_dest, y_dest, radious_dest, t_start, t_end, flow=-1, volume=-1, attribute=None, direct_call=True, auto_rename_vehicles=False):
         """
         Generate vehicles by specifying time-dependent origin-destination demand by specifying circular areas. This is new version of `adddemand_area2area`, more efficient, more smooth, and more accurate. However, it introduces some randomness.
 
@@ -1973,6 +1973,8 @@ class World:
             The demand volume from the origin to the destination. If volume is specified, the flow is ignored.
         attribute : any, optinonal
             Additional (meta) attributes defined by users.
+        auto_rename_vehicles : bool, optional
+            Specifying whether to rename new vehicles that have an already-existing name in the World.
         """
         origs = W.get_nodes_in_area(x_orig, y_orig, radious_orig)
         dests = W.get_nodes_in_area(x_dest, y_dest, radious_dest)
@@ -2012,7 +2014,7 @@ class World:
                         d2 = W.rng.choice([dd for dd in dests if dd!=d])
                     elif len(origs)>1:
                         o2 = W.rng.choice([oo for oo in origs if oo!=o])
-                W.addVehicle(o2, d2, t, attribute=attribute, direct_call=False)
+                W.addVehicle(o2, d2, t, attribute=attribute, direct_call=False, auto_rename=auto_rename_vehicles)
 
 
     @demand_info_record
