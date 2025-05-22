@@ -580,7 +580,7 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def network(s, t=None, detailed=1, state_variables="density_speed", minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=(6,6), network_font_size=12, node_size=2, legend=True):
+    def network(s, t=None, detailed=1, state_variables="density_speed", minwidth=0.5, maxwidth=12, left_handed=1, tmp_anim=0, figsize=(6,6), network_font_size=12, node_size=2, legend=True, legend_outside=False):
         """
         Visualizes the entire transportation network and its current traffic conditions.
 
@@ -611,6 +611,8 @@ class Analyzer:
             The size of the nodes in the visualization. Default is 2.
         legend : bool, optional
             If set to True, the legend will be displayed. Default is True.  
+        legend_outside : bool, optional
+            If set to True, the legend will be placed outside the plot. Default is False.
 
         Notes
         -----
@@ -764,7 +766,11 @@ class Analyzer:
                 labels  = [dummy_speed.get_label()] + speed_labels + [dummy_volume.get_label()] + volume_labels
 
 
-            plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, loc='best', frameon=True)
+            if not legend_outside:
+                plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, loc='best', frameon=True)
+            else:
+                plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, frameon=True, loc='center left', bbox_to_anchor=(1, 0.5))
+
 
 
         plt.tight_layout()
@@ -780,7 +786,7 @@ class Analyzer:
                 plt.close("all")
 
     @catch_exceptions_and_warn()
-    def network_average(s, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), network_font_size=12, node_size=2, legend=True):
+    def network_average(s, minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), network_font_size=12, node_size=2, legend=True, legend_outside=False):
         """
         Visualizes the average traffic conditions of the network.
         This function generates a network visualization where links are colored based on congestion levels (travel time ratio) and sized according to traffic volume.
@@ -802,7 +808,9 @@ class Analyzer:
         node_size : int, optional
             Size of the nodes in the visualization. Default is 2.
         legend : bool, optional
-            Whether to show the legend. Default is True (currently not implemented).
+            Whether to show the legend. Default is True.
+        legend_outside : bool, optional
+            If True, places the legend outside the plot. Default is False.
 
         Returns
         -------
@@ -883,7 +891,10 @@ class Analyzer:
             handles = [dummy_speed] + speed_handles + [dummy_volume] + volume_handles
             labels  = [dummy_speed.get_label()] + speed_labels + [dummy_volume.get_label()] + volume_labels
 
-            plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, loc='best', frameon=True)
+            if not legend_outside:
+                plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, loc='best', frameon=True)
+            else:
+                plt.legend(handles, labels, ncol=1, handlelength=2, columnspacing=1.0, frameon=True, loc='center left', bbox_to_anchor=(1, 0.5))
 
 
         plt.tight_layout()
@@ -1131,7 +1142,7 @@ class Analyzer:
             print(f"{s.W.TIME:>8.0f} s| {sum_vehs:>8.0f} vehs|  {avev:>4.1f} m/s| {time.time()-s.W.sim_start_time:8.2f} s", flush=True)
 
     @catch_exceptions_and_warn()
-    def network_anim(s, animation_speed_inverse=10, detailed=0, state_variables="density_speed", minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=24, file_name=None):
+    def network_anim(s, animation_speed_inverse=10, detailed=0, state_variables="density_speed", minwidth=0.5, maxwidth=12, left_handed=1, figsize=(6,6), node_size=2, network_font_size=20, timestep_skip=24, file_name=None, legend=True):
         """
         Generates an animation of the entire transportation network and its traffic states over time.
 
@@ -1163,6 +1174,8 @@ class Analyzer:
             How many timesteps are skipped per frame. Large value means coarse and lightweight animation. Default is 8.
         file_name : str, optional
             The name of the file to which the animation is saved. It overrides the defauld name. Default is None.
+        legend : bool, optional
+            If set to True, the legend will be displayed. Default is True.  
 
         Notes
         -----
@@ -1184,10 +1197,10 @@ class Analyzer:
             if int(t/s.W.LINKS[0].edie_dt) < s.W.LINKS[0].k_mat.shape[0]:
                 if detailed:
                     #todo_later: 今後はこちらもpillowにする
-                    s.network(int(t), detailed=detailed, state_variables=state_variables, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size)
+                    s.network(int(t), detailed=detailed, state_variables=state_variables, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size, legend=legend)
                     pics.append(Image.open(f"out{s.W.name}/tmp_anim_{t}.png"))
                 else:
-                    img_ret = s.network_pillow(int(t), detailed=detailed, state_variables=state_variables, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size, image_return=True)
+                    img_ret = s.network_pillow(int(t), detailed=detailed, state_variables=state_variables, minwidth=minwidth, maxwidth=maxwidth, left_handed=left_handed, tmp_anim=1, figsize=figsize, node_size=node_size, network_font_size=network_font_size, image_return=True, legend=legend)
                     pics.append(img_ret)
                 
         fname = f"out{s.W.name}/anim_network{detailed}.gif"
